@@ -15,4 +15,4 @@ test-suite:
         script:
                 - rename "s/\.example$//" config/*
                 - pip install -r requirements.txt
-                - python -m unittest bot.tests
+                - python -m unittest bot.tests -v
