@@ -16,14 +16,8 @@ import discord
 
 
 class MockTyping:
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc, tb):
-        return
-
     async def __aenter__(self):
-        return self.__enter__()
+        return self
 
     async def __aexit__(self, exc_type, exc, tb):
         return

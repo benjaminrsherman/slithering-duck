@@ -27,6 +27,8 @@ class Command(MessageTrigger):
         try:
             if self.is_valid_command(msg):
                 return len(command)
+            else:
+                return None
         except:
             return len(command)
 
