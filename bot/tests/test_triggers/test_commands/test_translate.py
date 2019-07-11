@@ -8,7 +8,7 @@ class TestTranslate(unittest.TestCase):
         self.translate = translate.Translate()
 
     @test_utils.async_test
-    async def test_translate(self):
+    async def test_translate_one_message(self):
         test_strings = [
             ("我是一隻鴨子", '"我是一隻鴨子" translates from ZH-CN to: `I am a duck`'),
             (
@@ -34,12 +34,19 @@ class TestTranslate(unittest.TestCase):
             self.assertEqual(msg.channel.test_result, string[1])
 
     @test_utils.async_test
-    async def test_translate_empty(self):
-        for num_spaces in range(0, 10):
-            msg = test_utils.init_message("!translate" + " " * num_spaces)
-            self.assertFalse(
-                await self.translate.execute(
-                    None, msg
-                )  # `client` is passed as None because it is never used
-            )
-            self.assertIsNone(msg.channel.test_result)
+    async def test_translate_multiple_messages(self):
+        test_input = "我是一隻鴨子"
+        expected_output = '"我是一隻鴨子" translates from ZH-CN to: `I am a duck`'
+
+        msg = test_utils.init_message(test_input)
+        msg2 = test_utils.init_message("!translate")
+        msg2.channel = msg.channel
+        msg2.id = 1
+        msg2.channel.internal_history.append(msg2)
+
+        self.assertTrue(
+            await self.translate.execute(
+                None, msg2
+            )  # `client` is passed as None because it is never used
+        )
+        self.assertEqual(msg2.channel.test_result, expected_output)
