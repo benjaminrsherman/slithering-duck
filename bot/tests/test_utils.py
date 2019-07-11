@@ -1,4 +1,5 @@
 import asyncio
+import shutil
 
 
 def async_test(f):
@@ -33,8 +34,16 @@ class MockChannel:
         self.test_result = None
         self.id = 0
 
-    async def send(self, message):
+    async def send(self, message="", file=None):
         self.test_result = message
+        if file is not None:
+            fname = file.fp.name
+            new_fname = f"{fname}_test"
+            shutil.copyfile(fname, new_fname)
+            self.filename = new_fname
+            file.close()
+        else:
+            self.filename = None
 
     def typing(self):
         return MockTyping()
