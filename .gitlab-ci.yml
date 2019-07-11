@@ -13,7 +13,7 @@ test-suite:
 test-coverage:
         stage: test
         script:
-                - pip install coverage
+                - pip install coverage discord
                 - coverage run --omit=bot/duck.py,bot/tests/triggers/__init__.py -m unittest bot.tests
                 - coverage report -m --fail-under 100
         allow_failure: true
