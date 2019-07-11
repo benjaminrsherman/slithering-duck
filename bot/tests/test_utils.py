@@ -23,10 +23,20 @@ class MockTyping:
         return
 
 
+class HistoryIter:
+    def __init__(self, msgs):
+        self.msgs = msgs
+
+    async def __aiter__(self):
+        for msg in self.msgs:
+            yield msg
+
+
 class MockChannel:
     def __init__(self):
         self.test_result = None
         self.id = 0
+        self.internal_history = []
 
     async def send(self, message="", file=None):
         self.test_result = message
@@ -41,6 +51,9 @@ class MockChannel:
 
     def typing(self):
         return MockTyping()
+
+    def history(self, limit=0):
+        return HistoryIter(self.internal_history[:limit])
 
 
 class MockUser:

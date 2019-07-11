@@ -4,5 +4,14 @@ from .test_echo import TestEcho
 from .test_latex import TestLatex
 from .test_lmdtfy import TestLmdtfy
 from .test_man import TestMan
+from .test_translate import TestTranslate
 
-all_commands = [TestAI, TestCode, TestEcho, TestLatex, TestLmdtfy, TestMan]
+all_commands = [
+    TestAI,
+    TestCode,
+    TestEcho,
+    TestLatex,
+    TestLmdtfy,
+    TestMan,
+    TestTranslate,
+]
