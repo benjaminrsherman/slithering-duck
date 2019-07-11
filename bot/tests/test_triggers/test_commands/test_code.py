@@ -16,9 +16,5 @@ class TestCode(unittest.TestCase):
     @test_utils.async_test
     async def test_ai(self):
         msg = test_utils.init_message(f"!code")
-        self.assertTrue(
-            await self.code.execute(
-                self.client, msg
-            )  # `client` is passed as None because it is never used
-        )
+        self.assertTrue(await self.code.execute(self.client, msg))
         self.assertEqual(msg.channel.test_result, self.code_message)

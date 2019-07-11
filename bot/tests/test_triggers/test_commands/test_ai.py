@@ -18,9 +18,5 @@ class TestAI(unittest.TestCase):
         test_strings = ["ai", "academic integrity"]
         for string in test_strings:
             msg = test_utils.init_message(f"!{string}")
-            self.assertTrue(
-                await self.ai.execute(
-                    self.client, msg
-                )  # `client` is passed as None because it is never used
-            )
+            self.assertTrue(await self.ai.execute(self.client, msg))
             self.assertEqual(msg.channel.test_result, self.ai_message)
