@@ -23,11 +23,32 @@ class MockTyping:
         return
 
 
+class MockUser:
+    def __init__(self):
+        self.bot = False
+        self.id = 0
+        self.display_name = ""
+        self.was_mentioned = False
+
+    def mentioned_in(self, msg):
+        return self.was_mentioned  # can be changed if a more robust solution is needed
+
+
+class MockGuild:
+    def __init__(self):
+        self.members = {}
+
+    def get_member(self, member_id):
+        return self.members[member_id]
+
+
 class MockChannel:
     def __init__(self):
         self.test_result = None
         self.id = 0
         self.internal_history = []
+        self.guild = MockGuild()
+        self.type = None
 
     async def send(self, message="", file=None, embed=None):
         self.test_result = message
@@ -58,18 +79,13 @@ class MockChannel:
             yield self.internal_history[i]
 
 
-class MockUser:
-    def __init__(self):
-        self.bot = False
-        self.id = 0
-
-
 class MockMessage:
     def __init__(self):
         self.id = 0
+        self.mentions = []
 
 
-def init_message(content):
+def init_message(content=""):
     message = MockMessage()
     message.author = MockUser()
     message.channel = MockChannel()
