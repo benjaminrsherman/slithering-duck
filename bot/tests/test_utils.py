@@ -29,26 +29,38 @@ class MockUser:
         self.id = 0
         self.display_name = ""
         self.was_mentioned = False
+        self.guild = None
 
     def mentioned_in(self, msg):
         return self.was_mentioned  # can be changed if a more robust solution is needed
+
+    @property
+    def mention(self):
+        return f"<@{self.id}>"
 
 
 class MockGuild:
     def __init__(self):
         self.members = {}
+        self.channels = {}
 
     def get_member(self, member_id):
         return self.members[member_id]
 
+    def get_channel(self, channel_id):
+        return self.channels[channel_id]
+
 
 class MockChannel:
     def __init__(self):
-        self.test_result = None
         self.id = 0
         self.internal_history = []
         self.guild = MockGuild()
         self.type = None
+
+        self.test_result = None
+        self.embed_dict = None
+        self.filename = None
 
     async def send(self, message="", file=None, embed=None):
         self.test_result = message

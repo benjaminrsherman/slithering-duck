@@ -3,20 +3,19 @@ import json
 import requests
 import discord
 from ... import test_utils
-from ....triggers.commands import minecraft
 from ....duck import DuckClient
 
 
 class TestMinecraft(unittest.TestCase):
     def setUp(self):
-        self.mc = minecraft.Minecraft()
         with open("config/config.json", "r") as config_file:
             config = json.load(config_file)
             self.minecraft = config["minecraft"]
         self.client = DuckClient()
+        self.client._connection.user = test_utils.MockUser()
 
     @test_utils.async_test
-    async def test_ai(self):
+    async def test_mc(self):
         test_strings = ["mc", "minecraft"]
         for string in test_strings:
             msg = test_utils.init_message(f"!{string}")
@@ -24,7 +23,7 @@ class TestMinecraft(unittest.TestCase):
             mock_usr.display_name = "testy_mc_test_face"
             msg.channel.guild.members[int(self.minecraft["host_id"])] = mock_usr
 
-            self.assertTrue(await self.mc.execute(self.client, msg))
+            await self.client.on_message(msg)
 
             data = requests.get(
                 url="https://mcapi.us/server/status",
@@ -50,3 +49,17 @@ class TestMinecraft(unittest.TestCase):
             )
 
             self.assertEqual(msg.channel.embed_dict, expected_embed.to_dict())
+            self.assertEqual(msg.channel.test_result, "")
+            self.assertIsNone(msg.channel.filename)
+
+    @test_utils.async_test
+    async def test_mc_from_bot(self):
+        test_strings = ["mc", "minecraft"]
+        for string in test_strings:
+            msg = test_utils.init_message(f"!{string}")
+            msg.author.bot = True
+
+            await self.client.on_message(msg)
+            self.assertIsNone(msg.channel.test_result)
+            self.assertIsNone(msg.channel.embed_dict)
+            self.assertIsNone(msg.channel.filename)

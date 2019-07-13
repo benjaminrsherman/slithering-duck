@@ -10,30 +10,25 @@ from functools import reduce
 import operator
 
 from ... import test_utils
-from ....triggers.commands import latex
 from ....duck import DuckClient
 
 
 class TestLatex(unittest.TestCase):
     def setUp(self):
-        self.latex = latex.Latex()
+        self.client = DuckClient()
+        self.client._connection.user = test_utils.MockUser()
 
     @test_utils.async_test
     async def test_latex(self):
         test_strings = ["$quack$", "\\Sigma"]
         for string in test_strings:
             msg = test_utils.init_message(f"!tex {string}")
-            self.assertTrue(
-                await self.latex.execute(
-                    None, msg
-                )  # `client` is passed as None because it is never used
-            )
+            await self.client.on_message(msg)
 
             data = requests.post(
                 url="http://latex2png.com/",
                 data={"latex": string, "res": 600, "color": "FFFFFF", "x": 62, "y": 28},
             )
-            # print(data.text)
             name = re.search(r"latex_(.*)\.png", data.text).group()
             if name:
                 url = f"http://latex2png.com/output//{name}"
@@ -51,6 +46,8 @@ class TestLatex(unittest.TestCase):
                 )
 
                 self.assertIsNotNone(msg.channel.filename)
+                self.assertIsNone(msg.channel.embed_dict)
+                self.assertEqual(msg.channel.test_result, "")
                 h1 = expected_img.histogram()
                 h2 = Image.open(msg.channel.filename).histogram()
 
@@ -67,10 +64,20 @@ class TestLatex(unittest.TestCase):
 
     @test_utils.async_test
     async def test_latex_empty(self):
-        for num_spaces in range(0, 10):
+        for num_spaces in range(0, 1):
             msg = test_utils.init_message("!tex" + " " * num_spaces)
-            self.assertFalse(
-                await self.latex.execute(
-                    None, msg
-                )  # `client` is passed as None because it is never used
-            )
+            await self.client.on_message(msg)
+            self.assertIsNone(msg.channel.test_result)
+            self.assertIsNone(msg.channel.embed_dict)
+            self.assertIsNone(msg.channel.filename)
+
+    @test_utils.async_test
+    async def test_latex_from_bot(self):
+        test_strings = ["$quack$", "\\Sigma"]
+        for string in test_strings:
+            msg = test_utils.init_message(f"!tex {string}")
+            msg.author.bot = True
+            await self.client.on_message(msg)
+            self.assertIsNone(msg.channel.test_result)
+            self.assertIsNone(msg.channel.embed_dict)
+            self.assertIsNone(msg.channel.filename)
