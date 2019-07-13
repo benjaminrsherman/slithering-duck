@@ -29,7 +29,7 @@ class MockChannel:
         self.id = 0
         self.internal_history = []
 
-    async def send(self, message="", file=None):
+    async def send(self, message="", file=None, embed=None):
         self.test_result = message
         if file is not None:
             fname = file.fp.name
@@ -39,6 +39,10 @@ class MockChannel:
             file.close()
         else:
             self.filename = None
+
+        if embed is not None:
+            self.embed_dict = embed.to_dict()
+
         msg = init_message(message)
         msg.channel = self
         self.internal_history.append(msg)
