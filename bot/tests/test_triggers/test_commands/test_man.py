@@ -24,6 +24,20 @@ class TestMan(unittest.TestCase):
             self.assertEqual(msg.channel.test_result, string[0])
 
     @test_utils.async_test
+    async def test_man_invalid(self):
+        test_strings = ["abcd", "2 echo", "3"]
+        for string in test_strings:
+            msg = test_utils.init_message(f"!man {string}")
+            self.assertTrue(
+                await self.man.execute(
+                    None, msg
+                )  # `client` is passed as None because it is never used
+            )
+            self.assertEqual(
+                msg.channel.test_result, f"Could not find man page for `{string}`"
+            )
+
+    @test_utils.async_test
     async def test_man_empty(self):
         for num_spaces in range(0, 10):
             msg = test_utils.init_message("!man" + " " * num_spaces)
