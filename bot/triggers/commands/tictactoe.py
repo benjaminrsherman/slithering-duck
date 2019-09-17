@@ -14,8 +14,9 @@ POSITIONS = [
     {"emoji": "6\u20E3", "name": ":six:"},
     {"emoji": "7\u20E3", "name": ":seven:"},
     {"emoji": "8\u20E3", "name": ":eight:"},
-    {"emoji": "9\u20E3", "name": ":nine:"}
+    {"emoji": "9\u20E3", "name": ":nine:"},
 ]
+
 
 class TicTacToe(Command, ReactionTrigger):
     names = ["tictactoe", "ttt"]
@@ -36,7 +37,7 @@ class TicTacToe(Command, ReactionTrigger):
                 -6: ":six:",
                 -7: ":seven:",
                 -8: ":eight:",
-                -9: ":nine:"
+                -9: ":nine:",
             }
 
             self.turn = 0
@@ -71,7 +72,7 @@ class TicTacToe(Command, ReactionTrigger):
                 -6: ":six:",
                 -7: ":seven:",
                 -8: ":eight:",
-                -9: ":nine:"
+                -9: ":nine:",
             }
             for (i, player) in enumerate(self.players):
                 pieces[i] = player["piece"]
@@ -131,11 +132,7 @@ class TicTacToe(Command, ReactionTrigger):
 
             embed = discord.Embed(
                 title="Tic Tac Toe",
-                description="\n".join(
-                    [
-                        "\n".join(["".join(row) for row in board]),
-                    ]
-                ),
+                description="\n".join(["\n".join(["".join(row) for row in board])]),
             )
             embed.add_field(
                 name="Players",
@@ -151,9 +148,7 @@ class TicTacToe(Command, ReactionTrigger):
             return embed
 
         def in_board(self, pos):
-            return (
-                pos[0] >= 0 and pos[1] >= 0 and pos[0] < 3  and pos[1] < 3
-            )
+            return pos[0] >= 0 and pos[1] >= 0 and pos[0] < 3 and pos[1] < 3
 
         def check_for_winner(self, pos):
             # check horizontals
@@ -212,14 +207,13 @@ class TicTacToe(Command, ReactionTrigger):
 
     # this is called when a message starting with "!commandname" is run
     async def execute_command(self, client, msg, content):
-        pieces = (
-            [":x:", ":o:"]
-        )
+        pieces = [":x:", ":o:"]
 
         players = list(set([*msg.mentions, msg.author]))
         if len(players) != 2:
             await utils.delay_send(
-                msg.channel, "Tic Tac Toe can only be played with 2 players, silly billy!"
+                msg.channel,
+                "Tic Tac Toe can only be played with 2 players, silly billy!",
             )
             return
 
@@ -229,7 +223,8 @@ class TicTacToe(Command, ReactionTrigger):
                 continue
             if player.bot:
                 await utils.delay_send(
-                    msg.channel, "Our code monkeys haven't trained the bots to play Tic Tac Toe yet..."
+                    msg.channel,
+                    "Our code monkeys haven't trained the bots to play Tic Tac Toe yet...",
                 )
                 return
 
@@ -237,9 +232,10 @@ class TicTacToe(Command, ReactionTrigger):
             {"piece": pieces[i], "user": player} for (i, player) in enumerate(players)
         ]
 
-        game = TicTacToe.Game (
+        game = TicTacToe.Game(
             # note we can't use [] * 3 otherwise it creates a deep copy
-            players, [[-1 - c - 3 * r for c in range(3)] for r in range(3)]
+            players,
+            [[-1 - c - 3 * r for c in range(3)] for r in range(3)],
         )
 
         msg = await msg.channel.send(game.get_content(), embed=game.get_embed())
