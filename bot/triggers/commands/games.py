@@ -1,2 +1,1 @@
-
 GLOBAL_GAMES = dict()

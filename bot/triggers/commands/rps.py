@@ -7,10 +7,11 @@ import discord
 reaccs = [
     {"emoji": "\U0001f311", "name": ":new_moon:"},
     {"emoji": "\U0001f4f0", "name": ":newspaper:"},
-    {"emoji": "\u2702", "name": ":scissors:"}
+    {"emoji": "\u2702", "name": ":scissors:"},
 ]
 
 GLOBAL_GAMES = dict()
+
 
 class RPSGame:
     def __init__(self, orig_msg, players):
@@ -47,8 +48,9 @@ class RPSGame:
         elif result == -1 or result == 2:
             return 2
 
-        print ("RPS: We shouldn't get here!")
+        print("RPS: We shouldn't get here!")
         return False
+
 
 class RockPaperScissors(Command, ReactionTrigger):
     names = ["rockpaperscissors", "rps"]
@@ -60,18 +62,11 @@ class RockPaperScissors(Command, ReactionTrigger):
 
     def get_embed(self, players):
         embed = discord.Embed(
-            title="Rock Paper Scissors",
-            description="Please react your move!"
+            title="Rock Paper Scissors", description="Please react your move!"
         )
 
         embed.add_field(
-            name="Players",
-            value=" vs. ".join(
-                [
-                    player.mention
-                    for player in players
-                ]
-            ),
+            name="Players", value=" vs. ".join([player.mention for player in players])
         )
 
         embed.set_footer(text="Duck Games not reviewed by @Eli")
@@ -115,13 +110,13 @@ class RockPaperScissors(Command, ReactionTrigger):
                 return
 
         # initialize the game in the game manager
-        games.append(
-            RPSGame(msg, [player.id for player in players])
-        )
+        games.append(RPSGame(msg, [player.id for player in players]))
 
         # send players RPS messages
         for player in players:
-            msg = await player.send(content=self.get_content(), embed=self.get_embed(players))
+            msg = await player.send(
+                content=self.get_content(), embed=self.get_embed(players)
+            )
             for spot in reaccs:
                 await msg.add_reaction(spot["emoji"])
 
@@ -160,7 +155,7 @@ class RockPaperScissors(Command, ReactionTrigger):
             return
 
         # store the answer (in Unicode form)
-        if (game.answer_dict[reaction.user_id] != ""):
+        if game.answer_dict[reaction.user_id] != "":
             return
         game.answer_dict[reaction.user_id] = reaction.emoji.name
 
@@ -173,7 +168,7 @@ class RockPaperScissors(Command, ReactionTrigger):
 
             embed = discord.Embed(
                 title="Rock Paper Scissors",
-                description=f"{player1}: {answer1}\n{player2}: {answer2}\n\n"
+                description=f"{player1}: {answer1}\n{player2}: {answer2}\n\n",
             )
 
             embed.set_footer(text="Duck Games not reviewed by @Phi11ipus")
@@ -184,7 +179,6 @@ class RockPaperScissors(Command, ReactionTrigger):
                 embed.description += f"{player1} wins!"
             elif result == 2:
                 embed.description += f"{player2} wins!"
-
 
             await game.msg.channel.send(content=None, embed=embed)
             # remove the message
