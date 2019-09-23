@@ -47,7 +47,7 @@ from .class_management import AddClass, RemoveClass
 from .code import Code
 from .echo import Echo
 from .emoji_mode import EmojiMode
-from .games import ConnectFour
+from .connectfour import ConnectFour
 from .latex import Latex  # latex machine broke
 from .list_classes import ListClasses
 from .lmdtfy import Lmdtfy, Lmgtfy
