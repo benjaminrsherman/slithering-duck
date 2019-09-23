@@ -45,18 +45,22 @@ class Command(MessageTrigger):
 from .ai import AI
 from .class_management import AddClass, RemoveClass
 from .code import Code
+from .connectfour import ConnectFour
 from .echo import Echo
 from .emoji_mode import EmojiMode
-from .connectfour import ConnectFour
+from .java import Java
 from .latex import Latex  # latex machine broke
 from .list_classes import ListClasses
 from .lmdtfy import Lmdtfy, Lmgtfy
 from .man import Man
 from .math import Math
 from .minecraft import Minecraft
+from .poll import Poll
 from .rps import RockPaperScissors
+from .steam import Steam
 from .tictactoe import TicTacToe
 from .translate import Translate
+from .version import Version
 from .wikipedia import Wikipedia
 from .xkcd import Xkcd
 
@@ -68,6 +72,7 @@ all_commands = [
     ConnectFour(),
     Echo(),
     EmojiMode(),
+    Java(),
     Latex(),  # latex machine broke
     ListClasses(),
     Lmdtfy(),
@@ -75,10 +80,13 @@ all_commands = [
     Man(),
     Math(),
     # Minecraft(),
+    Poll(),
     RemoveClass(),
     RockPaperScissors(),
+    Steam(),
     TicTacToe(),
     Translate(),
+    Version(),
     Wikipedia(),
     Xkcd(),
 ]
@@ -89,5 +97,7 @@ async def invalid_command(client, msg):
     if msg.author.bot or len(msg.content) < 2 or msg.content[0] != "!":
         return False
 
-    await msg.channel.send(client.messages["invalid_command"].format(msg.content))
+    cleaned_content = msg.content.replace("`", "'")
+
+    await msg.channel.send(client.messages["invalid_command"].format(cleaned_content))
     return True
