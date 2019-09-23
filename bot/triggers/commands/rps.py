@@ -175,7 +175,7 @@ class RockPaperScissors(Command, ReactionTrigger):
                 description=f"{player1}: {answer1}\n{player2}: {answer2}\n\n",
             )
 
-            embed.set_footer(text="Duck Games not reviewed by @Phi11ipus")
+            embed.set_footer(text="Duck Games not reviewed by @Eli")
 
             if result == 0:
                 embed.description += f"Draw!"
