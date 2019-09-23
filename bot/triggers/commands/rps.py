@@ -14,9 +14,10 @@ GLOBAL_GAMES = dict()
 
 
 class RPSGame:
-    def __init__(self, orig_msg, players):
+    def __init__(self, orig_msg, players, msgs):
         # initialize answers
         self.msg = orig_msg
+        self.msgs = msgs
         self.players = players
         self.answer_dict = dict()
         for player in players:
@@ -109,16 +110,19 @@ class RockPaperScissors(Command, ReactionTrigger):
                 print("Error: There are multiple RPS Games active between", player_set)
                 return
 
-        # initialize the game in the game manager
-        games.append(RPSGame(msg, [player.id for player in players]))
+        msgs = []
 
         # send players RPS messages
         for player in players:
-            msg = await player.send(
+            tmp = await player.send(
                 content=self.get_content(), embed=self.get_embed(players)
             )
             for spot in reaccs:
-                await msg.add_reaction(spot["emoji"])
+                await tmp.add_reaction(spot["emoji"])
+            msgs.append(tmp)
+
+        # initialize the game in the game manager
+        games.append(RPSGame(msg, [player.id for player in players], msgs))
 
     async def execute_reaction(self, client, reaction):
         if client.user.id == reaction.user_id:
@@ -181,5 +185,7 @@ class RockPaperScissors(Command, ReactionTrigger):
                 embed.description += f"{player2} wins!"
 
             await game.msg.channel.send(content=None, embed=embed)
-            # remove the message
-            await msg.delete(delay=0.5)
+
+            # remove the private messages
+            for message in game.msgs:
+                await message.delete(delay=0.5)
