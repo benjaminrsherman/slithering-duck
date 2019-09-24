@@ -1,42 +1,46 @@
 {
-	"disabled_triggers":{
-		"msg":[],
-		"new_member":[],
-		"reaction":[]
-	},
-	"quack_channels": [],
 	"SERVER_ID": 0,
-	"minecraft": {
-		"ip": "",
-		"host_id": 0
-	},
-  "connectfour": {
-    "max_cols": 15,
-    "max_games": 10,
-    "max_players": 4,
-    "max_rows": 10
-  },
-	"welcome_channel_id": 0,
+	"LOG_SERVER_ID": 0,
 
-	"recent_class_cache_size":100,
+	"disabled_triggers": {
+		"msg": [],
+		"new_member": [],
+		"reaction": []
+	},
+
+	"critical_roles": {
+		"MOD": 0,
+		"ALL_SEER": 0,
+		"NON_ALL_SEER": 0,
+		"TIME_OUT": 0
+	},
+
+	"critical_channels": {
+		"welcome": {
+			"server": 0,
+			"channel": 0
+		},
+
+		"dm_log": {
+			"server": 0,
+			"channel": 0
+		},
+
+		"traceback": {
+			"server": 0,
+			"channel": 0
+		}
+	},
+
+	"quack_channels": [],
+
+	"recent_class_cache_size": 100,
 
 	"WOLFRAM_ID": "",
 
-	"MOD_ROLE_ID": 0,
-
-	"ALL_SEER_ID": 0,
-	"NON_ALL_SEER_ID": 0,
-	"TIME_OUT_ID": 0,
-
-	"LOG_SERVER_ID": 0,
-	"DM_LOG_CHANNEL_ID": 0,
-
-	"TRACEBACK_SERVER_ID": 0,
-	"TRACEBACK_CHANNEL_ID": 0,
-
 	"CLASS_CATEGORY_IDS": [],
 
-	"add_skip_words":["major", "class"],
+	"add_skip_words": ["major", "class", "role"],
 
 	"general_roles": {
 		"All-Seer": 0,
@@ -173,5 +177,17 @@
 			"USAR",
 			"USNA"
 		]
+	},
+
+	"minecraft": {
+		"ip": "",
+		"host_id": 0
+	},
+
+	"connectfour": {
+		"max_cols": 15,
+		"max_games": 10,
+		"max_players": 4,
+		"max_rows": 10
 	}
 }
