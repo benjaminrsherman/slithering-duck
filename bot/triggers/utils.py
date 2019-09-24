@@ -52,8 +52,10 @@ def user_is_mod(client, user) -> bool:
         for role in user.roles:
             if role.id == client.config["MOD_ROLE_ID"]:
                 return True
-    finally:
-        return False
+    except:
+        pass
+
+    return False
 
 
 def has_flag(flag, content):
