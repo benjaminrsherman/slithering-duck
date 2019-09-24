@@ -22,7 +22,7 @@ class Command(MessageTrigger):
             return (None, True)
 
         try:
-            if not await self.valid_command(msg):
+            if not await self.valid_command(client, msg):
                 return (None, True)
         except:
             pass

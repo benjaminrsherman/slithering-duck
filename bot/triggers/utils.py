@@ -47,10 +47,12 @@ async def generate_react_menu(
     await sent_msg.add_reaction(no_matching_results_emote)
 
 
-def user_is_admin(user) -> bool:
+def user_is_mod(client, user) -> bool:
     try:
-        return user.guild_permissions.administrator
-    except:
+        for role in user.roles:
+            if role.id == client.config["MOD_ROLE_ID"]:
+                return True
+    finally:
         return False
 
 
