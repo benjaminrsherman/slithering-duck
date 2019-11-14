@@ -31,5 +31,5 @@ class Translate(Command):
 
         translated_text = translated_text.replace("`", "'")
 
-        response = f'`{content}` translates from {translation.src.upper()} to: `{translated_text}`'
+        response = f"`{content}` translates from {translation.src.upper()} to: `{translated_text}`"
         await utils.delay_send(msg.channel, response, 1)
