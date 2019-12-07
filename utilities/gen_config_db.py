@@ -25,16 +25,8 @@ c.execute(
     channel_id INTEGER DEFAULT 0,
     course_codes TEXT NOT NULL,
     departments TEXT NOT NULL,
-    identifiers TEXT NULL DEFAULT '[]'
-    );
-    """
-)
-
-c.execute(
-    """
-    CREATE TABLE IF NOT EXISTS logging (
-    source_channel_id INTEGER DEFAULT 0,
-    dest_channel_id INTEGER DEFAULT 0
+    identifiers TEXT NULL DEFAULT '[]',
+    active INTEGER DEFAULT 1
     );
     """
 )
