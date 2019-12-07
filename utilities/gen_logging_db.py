@@ -20,4 +20,12 @@ c.execute(
     """
 )
 
+c.execute(
+    """
+    CREATE TABLE IF NOT EXISTS unused_logging (
+    channel_id INTEGER DEFAULT 0
+    );
+    """
+)
+
 connection.commit()

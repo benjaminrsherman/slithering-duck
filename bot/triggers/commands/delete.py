@@ -1,5 +1,6 @@
 from . import Command
 from .. import utils
+from ...logging import get_log_channel
 
 
 class Delete(Command, ReactionTrigger):
@@ -37,11 +38,23 @@ class Delete(Command, ReactionTrigger):
             return
 
         channel_to_delete = msg.channel_mentions[0]  # only one channel per message
-
-        # TODO:
-        # - Mark channel as non-existent in database
-        # - Send message to logging server indicating that the channel is now invalid
-        # - Add logging equivalent to list of available logging server channels
-        # - Delete channel from server
+        log_equivalent = get_log_channel(channel_to_delete, client)
+        deleted_id = channel_to_delete.id
+        deleted_name = channel_to_delete.name
 
         await channel_to_delete.delete()
+
+        with client.log_lock:
+            client.log_c.execute(
+                f"INSERT INTO unused_logging VALUES {log_equivalent.id}"
+            )
+            client.log_c.execute(
+                f"DELETE FROM logging WHERE dest_channel_id = {log_equivalent.id}"
+            )
+            client.log_connection.commit()
+
+        with client.lock:
+            client.c.execute(f"DELETE FROM classes WHERE channel_id = {deleted_id}")
+            client.connection.commit()
+
+        log_equivalent.send("CHANNEL WAS: {deleted_name}")
