@@ -56,20 +56,19 @@ if len(sys.argv) > 2 and os.path.exists(sys.argv[2]):
             course_name_discord = course[:100]
 
             c.execute(  # for a specific class gets rid of the old data so we can insert the new data from the json
-                """DELETE FROM classes WHERE name = :name
-                """,
+                "SELECT * FROM classes WHERE name = :name",
                 {"name": course_name_discord},
             )
-            c.execute(  # inserts the new data for a class
-                """REPLACE INTO classes (name, channel_id, course_codes, departments, identifiers) VALUES
-                (:name, :channel_id, :course_codes, :departments, :identifiers );""",
-                {
-                    "name": course_name_discord,
-                    "channel_id": courses[course]["channel_id"],
-                    "course_codes": str(courses[course]["course_codes"]),
-                    "departments": str(courses[course]["departments"]),
-                    "identifiers": str(courses[course]["identifiers"]),
-                },
-            )
-
-connection.commit()
+            if not c.fetchall():
+                c.execute(  # inserts the new data for a class
+                    """INSERT INTO classes (name, channel_id, course_codes, departments, identifiers) VALUES
+                       (:name, :channel_id, :course_codes, :departments, :identifiers );""",
+                    {
+                        "name": course_name_discord,
+                        "channel_id": courses[course]["channel_id"],
+                        "course_codes": str(courses[course]["course_codes"]),
+                        "departments": str(courses[course]["departments"]),
+                        "identifiers": str(courses[course]["identifiers"]),
+                    },
+                )
+                connection.commit()
