@@ -18,7 +18,7 @@ def fuzzy_search(c, query, max_results):
     real_name_list = []
     class_list = []  # a list of ever class and every course_code etc
 
-    c.execute("SELECT * FROM classes")
+    c.execute("SELECT * FROM classes WHERE active != 0")
     records = c.fetchall()
     for i in records:
         real_name = ", ".join(json.loads(i[3].replace("'", '"'))) + ": " + i[1]
