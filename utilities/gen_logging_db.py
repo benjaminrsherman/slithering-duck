@@ -3,7 +3,7 @@ import os
 import sqlite3
 import json
 
-if len(sys.argv) < 2 or not sys.argv[1].endswith(".db"):
+if len(sys.argv) != 2 or not sys.argv[1].endswith(".db"):
     print(f"Usage: {sys.argv[0]} DB_FILE")
     sys.exit(1)
 

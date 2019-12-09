@@ -3,7 +3,7 @@ import sys
 import sqlite3
 import json
 
-if len(sys.argv) < 3:
+if len(sys.argv) < 2 or len(sys.argv) > 3:
     print(f"USAGE: python {sys.argv[0]} DB_NAME [IDENTIFIERS]")
     sys.exit(1)
 
@@ -33,7 +33,7 @@ for course in yacs_result["data"]:
             "identifiers": [],
         }
 
-if len(sys.argv) >= 3:
+if len(sys.argv) == 3:
     course_identifiers = {}
     with open(sys.argv[2], "r") as identifiers_file:
         course_identifiers = json.load(identifiers_file)

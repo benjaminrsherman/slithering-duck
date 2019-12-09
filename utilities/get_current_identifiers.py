@@ -2,7 +2,7 @@ import sys
 import sqlite3
 import json
 
-if len(sys.argv) < 2:
+if len(sys.argv) < 2 or len(sys.argv) > 3:
     print(
         f"USAGE: python {sys.argv[0]} DB_NAME [OUTFILE (defaults to identifiers.json)]"
     )
@@ -21,7 +21,7 @@ for course in c.fetchall():
     identifiers[course_name] = course_identifiers
 
 out_fname = "identifiers.json"
-if len(sys.argv) >= 3:
+if len(sys.argv) == 3:
     out_fname = sys.argv[2]
 
 with open(out_fname, "w") as f:

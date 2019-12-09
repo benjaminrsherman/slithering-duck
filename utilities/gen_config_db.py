@@ -3,7 +3,7 @@ import os
 import sqlite3
 import json
 
-if len(sys.argv) < 2 or not sys.argv[1].endswith(".db"):
+if len(sys.argv) < 2 or len(sys.argv) > 3 or not sys.argv[1].endswith(".db"):
     print(f"Usage: {sys.argv[0]} DB_FILE (JSON_FILE)")
     sys.exit(1)
 
@@ -50,7 +50,7 @@ c.execute(
     """
 )
 
-if len(sys.argv) > 2:
+if len(sys.argv) == 3:
     print("Updating courses in database")
     with open(sys.argv[2], "r") as courses_file:
         courses = json.load(courses_file)
