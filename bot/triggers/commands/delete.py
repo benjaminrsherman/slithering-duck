@@ -1,18 +1,33 @@
 from . import Command
 from .. import utils
+from ..reaction_trigger import ReactionTrigger
 from ...logging import get_log_channel
 
 
 class Delete(Command, ReactionTrigger):
     prefixes = ["%"]
+    names = ["delete"]
     requires_mod = True
+    needsContent = False
 
     async def prompt_for_channel_deletion(
-        emoji, command_channel, channel_to_delete, author
+        self, client, command_channel, channel_to_delete, author
     ):
-        await command_channel.send(
+        async with client.log_lock:
+            client.c.execute(
+                "SELECT * FROM classes WHERE channel_id = :channel_id",
+                {"channel_id": channel_to_delete.id},
+            )
+            if not client.c.fetchall():
+                await command_channel.send(
+                    f"ERROR: <#{channel_to_delete.id}> is not a class channel"
+                )
+                return
+
+        msg = await command_channel.send(
             f"WARNING: You are about to delete <#{channel_to_delete.id}>.  <@{author.id}> can confirm this action by reacting :+1: to this message."
-        ).add_reaction(emoji)
+        )
+        await msg.add_reaction(client.get_emoji(client.config["thumb_id"]))
 
     async def execute_command(self, client, msg, content):
         if not msg.author.guild_permissions.administrator:
@@ -20,52 +35,55 @@ class Delete(Command, ReactionTrigger):
             return
 
         if not msg.channel_mentions:
-            prompt_for_channel_deletion(
-                client.get_emoji(653459984268656640),
-                msg.channel,
-                msg.channel,
-                msg.author,
+            await self.prompt_for_channel_deletion(
+                client, msg.channel, msg.channel, msg.author,
             )
             return
 
         for channel in msg.channel_mentions:
-            prompt_for_channel_deletion(
-                client.get_emoji(653459984268656640), msg.channel, channel, msg.author
+            await self.prompt_for_channel_deletion(
+                client, msg.channel, channel, msg.author,
             )
 
     async def execute_reaction(self, client, reaction, channel, msg, user):
         if (
-            reaction.emoji.id != 653459984268656640  # reaction must be a :+1:
+            reaction.emoji.id != client.config["thumb_id"]  # reaction must be a :+1:
             or not msg.author.bot  # must be reacting to a bot message
-            or user not in msg.user_mentions  # prevent misclicks
+            or user not in msg.mentions  # prevent misclicks
             or not msg.content.startswith(
                 "WARNING: You are about to delete "
             )  # we must be deleting a channel
             or not msg.channel_mentions  # we need a channel to delete
             or not any(
-                react.me and react.emoji.id == 653459984268656640
+                react.me and react.emoji.id == client.config["thumb_id"]
+                for react in msg.reactions
             )  # the bot must agree to this
         ):
             return
 
         channel_to_delete = msg.channel_mentions[0]  # only one channel per message
-        log_equivalent = get_log_channel(channel_to_delete, client)
+        log_equivalent = await get_log_channel(channel_to_delete, client)
         deleted_id = channel_to_delete.id
         deleted_name = channel_to_delete.name
 
         await channel_to_delete.delete()
 
-        with client.log_lock:
+        async with client.log_lock:
             client.log_c.execute(
-                f"INSERT INTO unused_logging VALUES {log_equivalent.id}"
+                "INSERT INTO unused_logging VALUES (:channel_id);",
+                {"channel_id": log_equivalent.id},
             )
             client.log_c.execute(
-                f"DELETE FROM logging WHERE dest_channel_id = {log_equivalent.id}"
+                "DELETE FROM logging WHERE dest_channel_id = (:channel_id);",
+                {"channel_id": log_equivalent.id},
             )
             client.log_connection.commit()
 
-        with client.lock:
-            client.c.execute(f"DELETE FROM classes WHERE channel_id = {deleted_id}")
+        async with client.lock:
+            client.c.execute(
+                "DELETE FROM classes WHERE channel_id = :channel_id;",
+                {"channel_id": deleted_id},
+            )
             client.connection.commit()
 
-        log_equivalent.send("CHANNEL WAS: {deleted_name}")
+        await log_equivalent.send(f"CHANNEL WAS: {deleted_name}")
