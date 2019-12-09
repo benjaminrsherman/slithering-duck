@@ -7,6 +7,8 @@ from ...logging import get_log_channel
 class Delete(Command, ReactionTrigger):
     prefixes = ["%"]
     names = ["delete"]
+    description = "ADMIN ONLY: Deletes a channel"
+    description2 = "ADMIN ONLY: Deletes a channel"
     requires_mod = True
     needsContent = False
 
