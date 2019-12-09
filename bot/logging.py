@@ -63,12 +63,11 @@ async def get_log_channel(channel, client):
             client.config["DM_LOG_CHANNEL_ID"]
         )
     else:
-        client.log_lock.acquire()
-        client.log_c.execute(
-            f"SELECT dest_channel_id FROM logging WHERE source_channel_id = {channel.id}"
-        )
-        dest_channel_id = client.log_c.fetchone()
-        client.log_lock.release()
+        async with client.log_lock:
+            client.log_c.execute(
+                f"SELECT dest_channel_id FROM logging WHERE source_channel_id = {channel.id}"
+            )
+            dest_channel_id = client.log_c.fetchone()
 
         if dest_channel_id is None:
             try:
@@ -85,12 +84,11 @@ async def get_log_channel(channel, client):
                 await destination_channel.edit(name=channel.name)
                 await destination_channel.send(f"CHANNEL NOW LOGGING: {channel.name}")
 
-            client.log_lock.acquire()
-            client.log_c.execute(
-                f"INSERT INTO logging (source_channel_id, dest_channel_id) VALUES ({channel.id}, {destination_channel.id})"
-            )
-            client.log_connection.commit()
-            client.log_lock.release()
+            async with client.log_lock:
+                client.log_c.execute(
+                    f"INSERT INTO logging (source_channel_id, dest_channel_id) VALUES ({channel.id}, {destination_channel.id})"
+                )
+                client.log_connection.commit()
 
         else:
             destination_channel = client.LOG_SERVER.get_channel(dest_channel_id[0])
