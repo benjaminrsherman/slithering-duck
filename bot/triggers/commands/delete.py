@@ -66,7 +66,14 @@ class Delete(Command, ReactionTrigger):
         deleted_id = channel_to_delete.id
         deleted_name = channel_to_delete.name
 
-        await channel_to_delete.delete()
+        async with client.lock:
+            await channel_to_delete.delete()
+
+            client.c.execute(
+                "UPDATE classes SET channel_id = 0 WHERE channel_id = :channel_id;",
+                {"channel_id": deleted_id},
+            )
+            client.connection.commit()
 
         async with client.log_lock:
             client.log_c.execute(
@@ -78,12 +85,5 @@ class Delete(Command, ReactionTrigger):
                 {"channel_id": log_equivalent.id},
             )
             client.log_connection.commit()
-
-        async with client.lock:
-            client.c.execute(
-                "DELETE FROM classes WHERE channel_id = :channel_id;",
-                {"channel_id": deleted_id},
-            )
-            client.connection.commit()
 
         await log_equivalent.send(f"CHANNEL WAS: {deleted_name}")
