@@ -27,7 +27,7 @@ c = connection.cursor()
 c.execute("UPDATE classes SET active = 0;")
 
 for course in courses:
-    course_name_discord = course_name[:100]
+    course_name_discord = course[:100]
 
     c.execute(
         "UPDATE classes SET active = 1 WHERE name = :name;",
