@@ -58,6 +58,7 @@ def user_is_mod(client, user) -> bool:
 
     return False
 
+
 def user_in_timeout(client, user) -> bool:
     member = client.SERVER.get_member(user.id)
     for role in member.roles:
@@ -129,4 +130,3 @@ async def sendTraceback(client, content=""):
         print(
             "\nNote: traceback was not sent to Discord, if you want this double check your config.json"
         )
-
