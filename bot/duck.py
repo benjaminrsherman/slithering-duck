@@ -94,6 +94,17 @@ class DuckClient(discord.Client):
             if await invalid_emoji_message(self, msg):
                 return
 
+            if (
+                "discord.gg/" in msg.content
+                or "discordapp.com/invite/" in msg.content
+                or "discord.com/invite/" in msg.content
+            ):
+                await msg.delete()
+                await msg.author.send(
+                    f"Your message (`{utils.sanitized(msg.content)}`) has been removed because it contained a discord server invite link."
+                )
+
+            return
             replied = False
             best_trigger = None
             best_trigger_idx = None
@@ -101,6 +112,7 @@ class DuckClient(discord.Client):
             for trigger in MSG_TRIGGERS:
                 if type(trigger).__name__ in self.config["disabled_triggers"]["msg"]:
                     continue
+
                 trigger_score, idx = await trigger.get_trigger_score(self, msg)
                 if trigger_score > best_trigger_score:
                     best_trigger = trigger
@@ -130,6 +142,21 @@ class DuckClient(discord.Client):
 
         if user.bot:
             return
+
+        try:
+            if (
+                "discord.gg/" in msg_full.content
+                or "discordapp.com/invite/" in msg_full.content
+                or "discord.com/invite/" in msg_full.content
+            ):
+                await msg.delete()
+                await msg.author.send(
+                    f"Your message (`{utils.sanitized(msg.content)}`) has been removed because it contained a discord server invite link."
+                )
+                return
+        except:
+            await utils.sendTraceback(self, msg.content)
+
         try:
             await logging.log_message(self, msg_full, "(EDITED)")
             await invalid_emoji_message(self, msg_full)

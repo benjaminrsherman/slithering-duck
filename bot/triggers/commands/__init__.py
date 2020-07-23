@@ -11,6 +11,7 @@ from ...duck import DuckClient
 
 # Import all command classes here
 from .ai import AI
+from .anime import Anime
 from .choice import Choice
 from .class_management import AddClass, RemoveClass
 from .code import Code
@@ -36,12 +37,14 @@ from .tictactoe import TicTacToe
 from .translate import Translate
 from .version import Version
 from .wikipedia import Wikipedia
+from .weather import Weather
 from .xkcd import Xkcd
 
 # NB: Please keep this in alphabetical order to maintain organized code
 ALL_COMMANDS = [
     AddClass(),
     AI(),
+    Anime(),
     Choice(),
     Code(),
     ConnectFour(),
@@ -68,6 +71,7 @@ ALL_COMMANDS = [
     Translate(),
     Version(),
     Wikipedia(),
+    Weather(),
     Xkcd(),
 ]
 
